@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cpppers"
+version = "0.1.0"
+description = "SABO 2.0 C/C++ source-code extractor (libclang-backed)"
+readme = "cpppers-stack-recommendation.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "SABO contributors" }]
+dependencies = [
+    "libclang>=16",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+cpppers = "cpppers.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["cpppers*"]
+exclude = ["cpppers.tests*"]
