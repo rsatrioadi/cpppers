@@ -56,53 +56,56 @@ def label_for_cursor(cursor) -> str | None:  # type: ignore[no-untyped-def]
     """
     from clang.cindex import CursorKind  # local import: keeps unit tests fast
 
-    k = cursor.kind
+    try:
 
-    # Namespaces / translation-unit-scope == Scope
-    if k in (
-        CursorKind.NAMESPACE,
-        CursorKind.TRANSLATION_UNIT,
-    ):
-        return "Scope"
+        k = cursor.kind
 
-    # Aggregate types and aliases all collapse to Type. The "kind" property
-    # on the resulting Node disambiguates (class / struct / union / enum / alias).
-    if k in (
-        CursorKind.CLASS_DECL,
-        CursorKind.STRUCT_DECL,
-        CursorKind.UNION_DECL,
-        CursorKind.ENUM_DECL,
-        CursorKind.CLASS_TEMPLATE,
-        CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION,
-        CursorKind.TYPEDEF_DECL,
-        CursorKind.TYPE_ALIAS_DECL,
-        CursorKind.TYPE_ALIAS_TEMPLATE_DECL,
-    ):
-        return "Type"
+        # Namespaces / translation-unit-scope == Scope
+        if k in (
+            CursorKind.NAMESPACE,
+            CursorKind.TRANSLATION_UNIT,
+        ):
+            return "Scope"
 
-    # Functions / methods / constructors / destructors / operators == Operation
-    if k in (
-        CursorKind.FUNCTION_DECL,
-        CursorKind.CXX_METHOD,
-        CursorKind.CONSTRUCTOR,
-        CursorKind.DESTRUCTOR,
-        CursorKind.CONVERSION_FUNCTION,
-        CursorKind.FUNCTION_TEMPLATE,
-    ):
-        return "Operation"
+        # Aggregate types and aliases all collapse to Type. The "kind" property
+        # on the resulting Node disambiguates (class / struct / union / enum / alias).
+        if k in (
+            CursorKind.CLASS_DECL,
+            CursorKind.STRUCT_DECL,
+            CursorKind.UNION_DECL,
+            CursorKind.ENUM_DECL,
+            CursorKind.CLASS_TEMPLATE,
+            CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION,
+            CursorKind.TYPEDEF_DECL,
+            CursorKind.TYPE_ALIAS_DECL,
+            CursorKind.TYPE_ALIAS_TEMPLATE_DECL,
+        ):
+            return "Type"
 
-    # Variables in any scope (field / param / local / global / enum-member) == Variable
-    if k in (
-        CursorKind.FIELD_DECL,
-        CursorKind.PARM_DECL,
-        CursorKind.VAR_DECL,
-        CursorKind.ENUM_CONSTANT_DECL,
-        CursorKind.TEMPLATE_TYPE_PARAMETER,
-        CursorKind.TEMPLATE_NON_TYPE_PARAMETER,
-        CursorKind.TEMPLATE_TEMPLATE_PARAMETER,
-    ):
-        return "Variable"
+        # Functions / methods / constructors / destructors / operators == Operation
+        if k in (
+            CursorKind.FUNCTION_DECL,
+            CursorKind.CXX_METHOD,
+            CursorKind.CONSTRUCTOR,
+            CursorKind.DESTRUCTOR,
+            CursorKind.CONVERSION_FUNCTION,
+            CursorKind.FUNCTION_TEMPLATE,
+        ):
+            return "Operation"
 
+        # Variables in any scope (field / param / local / global / enum-member) == Variable
+        if k in (
+            CursorKind.FIELD_DECL,
+            CursorKind.PARM_DECL,
+            CursorKind.VAR_DECL,
+            CursorKind.ENUM_CONSTANT_DECL,
+            CursorKind.TEMPLATE_TYPE_PARAMETER,
+            CursorKind.TEMPLATE_NON_TYPE_PARAMETER,
+            CursorKind.TEMPLATE_TEMPLATE_PARAMETER,
+        ):
+            return "Variable"
+    except:
+        pass
     return None
 
 
