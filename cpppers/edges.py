@@ -47,49 +47,52 @@ def emit_semantic_edges(
 
     for tu in translation_units:
         for cursor in tu.cursor.walk_preorder():
-            kind = cursor.kind
-            usr = cursor.get_usr()
-            if not usr or usr not in usr_to_node:
-                # Either we already filtered this cursor (external symbol),
-                # or it's not a SABO-relevant decl.
-                continue
-            node = usr_to_node[usr]
+            try:
+                kind = cursor.kind
+                usr = cursor.get_usr()
+                if not usr or usr not in usr_to_node:
+                    # Either we already filtered this cursor (external symbol),
+                    # or it's not a SABO-relevant decl.
+                    continue
+                node = usr_to_node[usr]
 
-            if kind in (CursorKind.CLASS_TEMPLATE, CursorKind.FUNCTION_TEMPLATE):
-                _emit_template_parameters(graph, cursor, node, usr_to_node)
+                if kind in (CursorKind.CLASS_TEMPLATE, CursorKind.FUNCTION_TEMPLATE):
+                    _emit_template_parameters(graph, cursor, node, usr_to_node)
 
-            if kind in (
-                CursorKind.FUNCTION_DECL,
-                CursorKind.CXX_METHOD,
-                CursorKind.CONSTRUCTOR,
-                CursorKind.DESTRUCTOR,
-                CursorKind.CONVERSION_FUNCTION,
-                CursorKind.FUNCTION_TEMPLATE,
-            ):
-                _emit_returns(graph, cursor, node, usr_to_node)
-                _emit_overrides(graph, cursor, node, usr_to_node)
-                _emit_invokes_uses_instantiates(graph, cursor, node, usr_to_node)
+                if kind in (
+                    CursorKind.FUNCTION_DECL,
+                    CursorKind.CXX_METHOD,
+                    CursorKind.CONSTRUCTOR,
+                    CursorKind.DESTRUCTOR,
+                    CursorKind.CONVERSION_FUNCTION,
+                    CursorKind.FUNCTION_TEMPLATE,
+                ):
+                    _emit_returns(graph, cursor, node, usr_to_node)
+                    _emit_overrides(graph, cursor, node, usr_to_node)
+                    _emit_invokes_uses_instantiates(graph, cursor, node, usr_to_node)
 
-            if kind in (
-                CursorKind.FIELD_DECL,
-                CursorKind.PARM_DECL,
-                CursorKind.VAR_DECL,
-            ):
-                _emit_typed_for_variable(graph, cursor, node, usr_to_node)
+                if kind in (
+                    CursorKind.FIELD_DECL,
+                    CursorKind.PARM_DECL,
+                    CursorKind.VAR_DECL,
+                ):
+                    _emit_typed_for_variable(graph, cursor, node, usr_to_node)
 
-            if kind in (
-                CursorKind.CLASS_DECL,
-                CursorKind.STRUCT_DECL,
-                CursorKind.CLASS_TEMPLATE,
-                CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION,
-            ):
-                _emit_base_specializes(graph, cursor, node, usr_to_node)
+                if kind in (
+                    CursorKind.CLASS_DECL,
+                    CursorKind.STRUCT_DECL,
+                    CursorKind.CLASS_TEMPLATE,
+                    CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION,
+                ):
+                    _emit_base_specializes(graph, cursor, node, usr_to_node)
 
-            if kind in (
-                CursorKind.TYPEDEF_DECL,
-                CursorKind.TYPE_ALIAS_DECL,
-            ):
-                _emit_typed_for_alias(graph, cursor, node, usr_to_node)
+                if kind in (
+                    CursorKind.TYPEDEF_DECL,
+                    CursorKind.TYPE_ALIAS_DECL,
+                ):
+                    _emit_typed_for_alias(graph, cursor, node, usr_to_node)
+            except:
+                pass
 
 
 # ----------------------------------------------------------------------------

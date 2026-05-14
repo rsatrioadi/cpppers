@@ -118,31 +118,34 @@ def kind_property_for_cursor(cursor) -> str:  # type: ignore[no-untyped-def]
     """
     from clang.cindex import CursorKind
 
-    k = cursor.kind
-    mapping = {
-        CursorKind.NAMESPACE: "namespace",
-        CursorKind.TRANSLATION_UNIT: "translation_unit",
-        CursorKind.CLASS_DECL: "class",
-        CursorKind.STRUCT_DECL: "struct",
-        CursorKind.UNION_DECL: "union",
-        CursorKind.ENUM_DECL: "enum",
-        CursorKind.CLASS_TEMPLATE: "class_template",
-        CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION: "partial_specialization",
-        CursorKind.TYPEDEF_DECL: "alias",
-        CursorKind.TYPE_ALIAS_DECL: "alias",
-        CursorKind.TYPE_ALIAS_TEMPLATE_DECL: "alias",
-        CursorKind.FUNCTION_DECL: "function",
-        CursorKind.CXX_METHOD: "method",
-        CursorKind.CONSTRUCTOR: "constructor",
-        CursorKind.DESTRUCTOR: "destructor",
-        CursorKind.CONVERSION_FUNCTION: "conversion",
-        CursorKind.FUNCTION_TEMPLATE: "function_template",
-        CursorKind.FIELD_DECL: "field",
-        CursorKind.PARM_DECL: "parameter",
-        CursorKind.VAR_DECL: "variable",
-        CursorKind.ENUM_CONSTANT_DECL: "enum_constant",
-        CursorKind.TEMPLATE_TYPE_PARAMETER: "type_parameter",
-        CursorKind.TEMPLATE_NON_TYPE_PARAMETER: "non_type_parameter",
-        CursorKind.TEMPLATE_TEMPLATE_PARAMETER: "template_template_parameter",
-    }
-    return mapping.get(k, k.name.lower())
+    try:
+        k = cursor.kind
+        mapping = {
+            CursorKind.NAMESPACE: "namespace",
+            CursorKind.TRANSLATION_UNIT: "translation_unit",
+            CursorKind.CLASS_DECL: "class",
+            CursorKind.STRUCT_DECL: "struct",
+            CursorKind.UNION_DECL: "union",
+            CursorKind.ENUM_DECL: "enum",
+            CursorKind.CLASS_TEMPLATE: "class_template",
+            CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION: "partial_specialization",
+            CursorKind.TYPEDEF_DECL: "alias",
+            CursorKind.TYPE_ALIAS_DECL: "alias",
+            CursorKind.TYPE_ALIAS_TEMPLATE_DECL: "alias",
+            CursorKind.FUNCTION_DECL: "function",
+            CursorKind.CXX_METHOD: "method",
+            CursorKind.CONSTRUCTOR: "constructor",
+            CursorKind.DESTRUCTOR: "destructor",
+            CursorKind.CONVERSION_FUNCTION: "conversion",
+            CursorKind.FUNCTION_TEMPLATE: "function_template",
+            CursorKind.FIELD_DECL: "field",
+            CursorKind.PARM_DECL: "parameter",
+            CursorKind.VAR_DECL: "variable",
+            CursorKind.ENUM_CONSTANT_DECL: "enum_constant",
+            CursorKind.TEMPLATE_TYPE_PARAMETER: "type_parameter",
+            CursorKind.TEMPLATE_NON_TYPE_PARAMETER: "non_type_parameter",
+            CursorKind.TEMPLATE_TEMPLATE_PARAMETER: "template_template_parameter",
+        }
+        return mapping.get(k, k.name.lower())
+    except:
+        return ""
