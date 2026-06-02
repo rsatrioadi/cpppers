@@ -31,6 +31,11 @@ from .cdb import (
 from .defaults import ALL_C_CPP_EXTS, ALL_SOURCE_EXTS, DEFAULT_CXX_STD
 from .edges import emit_semantic_edges
 from .fs_walk import discover_source_files, emit_filesystem_hierarchy
+from .heuristic_includes import (
+    build_header_map,
+    infer_include_dirs_for_files,
+    sweep_header_dirs,
+)
 from .includes import emit_include_edges
 from .lpg import Graph
 from .parsing import make_index, parse_translation_unit
@@ -53,6 +58,7 @@ class ExtractorOptions:
     no_compile_commands: bool = False
     compile_commands_dir: str | None = None
     cxx_std: str = DEFAULT_CXX_STD
+    skip_heuristic_includes: bool = False
 
 
 def extract(options: ExtractorOptions) -> Graph:
@@ -80,6 +86,7 @@ def extract(options: ExtractorOptions) -> Graph:
         no_cdb=options.no_compile_commands,
         cdb_dir=options.compile_commands_dir,
         cxx_std=options.cxx_std,
+        skip_heuristic_includes=options.skip_heuristic_includes,
     )
 
     # --- Phase 3: parse + walk ---------------------------------------------
@@ -138,12 +145,15 @@ def _resolve_file_commands(
     no_cdb: bool,
     cdb_dir: str | None,
     cxx_std: str,
+    skip_heuristic_includes: bool = False,
 ) -> list[FileCommand]:
     """Match each discovered source file to a parse command.
 
     Strategy:
     * If ``no_cdb`` is set, synthesise fallback args for every source file
-      and emit a prominent warning to stderr (per §3.2 limitation 1).
+      and emit a prominent warning to stderr (per §3.2 limitation 1). Include
+      paths are inferred heuristically (see ``heuristic_includes``) unless
+      ``skip_heuristic_includes`` is set.
     * Otherwise, locate the compile_commands.json. If missing, **fail loudly**
       (per §4 q1 — required by default).
     * For files in the discovery set that the CDB doesn't cover (e.g.,
@@ -163,6 +173,23 @@ def _resolve_file_commands(
         # ``#include "foo.h"`` fail in fallback mode and the fallback
         # is effectively useless on most real projects.
         auto_includes = _auto_include_dirs(root)
+
+        # Heuristic layers: a global sweep of every directory containing a
+        # header, plus per-file include-path inference from a regex scan of
+        # the source's own #include directives.
+        global_header_dirs: list[str] = []
+        per_file_dirs: dict[str, list[str]] = {}
+        if not skip_heuristic_includes:
+            global_header_dirs = sweep_header_dirs(discovered, root)
+            header_map = build_header_map(discovered)
+            per_file_dirs = infer_include_dirs_for_files(discovered, header_map)
+            log.info(
+                "Heuristic include inference: %d header dirs swept, "
+                "%d files got per-file include paths",
+                len(global_header_dirs),
+                len(per_file_dirs),
+            )
+
         return [
             FileCommand(
                 filename=p,
@@ -170,7 +197,12 @@ def _resolve_file_commands(
                 arguments=fallback_args_for_file(
                     p,
                     cxx_std=cxx_std,
-                    extra_include_dirs=[*auto_includes, str(Path(p).parent)],
+                    extra_include_dirs=[
+                        *auto_includes,
+                        str(Path(p).parent),
+                        *global_header_dirs,
+                        *per_file_dirs.get(p, []),
+                    ],
                 ),
             )
             for p in sorted(discovered_set)

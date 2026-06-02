@@ -73,6 +73,14 @@ def build_parser() -> argparse.ArgumentParser:
         "Only used with --no-compile-commands.",
     )
     p.add_argument(
+        "--skip-heuristic-includes",
+        action="store_true",
+        help="Disable heuristic include-path inference in --no-compile-commands "
+        "mode. By default, header directories are swept and #include directives "
+        "scanned to reconstruct -I paths; pass this to fall back to the minimal "
+        "auto-detected roots only.",
+    )
+    p.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -105,6 +113,7 @@ def main(argv: list[str] | None = None) -> int:
         no_compile_commands=args.no_compile_commands,
         compile_commands_dir=args.compile_commands_dir,
         cxx_std=args.cxx_std,
+        skip_heuristic_includes=args.skip_heuristic_includes,
     )
 
     try:

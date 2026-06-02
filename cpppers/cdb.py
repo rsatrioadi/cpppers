@@ -171,6 +171,11 @@ def fallback_args_for_file(
         # Plain C path. We treat .h pessimistically as C++ (matches what most
         # IDEs do); pure-C projects will pin it via -x c if they want.
         args += ["-x", "c-header" if is_header else "c", "-std=c11"]
+    seen: set[str] = set()
     for inc in extra_include_dirs:
-        args += [f"-I{inc}"]
+        norm = os.path.normpath(inc)
+        if norm in seen:
+            continue
+        seen.add(norm)
+        args += [f"-I{norm}"]
     return args
