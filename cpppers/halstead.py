@@ -1,11 +1,14 @@
+from __future__ import annotations
 import math
 from dataclasses import dataclass, field
-from typing import Dict, List, Set, Optional
+from typing import Dict, List, Set, Optional, TYPE_CHECKING
 
 from clang.cindex import TokenKind, Cursor
 
 from .lpg import Node, Graph, Edge
-from .walker import SymbolTable
+
+if TYPE_CHECKING:
+    from .walker import SymbolTable
 
 @dataclass
 class TokenCount:
