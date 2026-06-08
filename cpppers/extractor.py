@@ -40,6 +40,7 @@ from .includes import emit_include_edges
 from .lpg import Graph
 from .parsing import make_index, parse_translation_unit
 from .walker import emit_symbol_nodes, walk_translation_units
+from .halstead import inject_halstead
 
 
 log = logging.getLogger(__name__)
@@ -119,6 +120,9 @@ def extract(options: ExtractorOptions) -> Graph:
         file_nodes=file_nodes,
         include_external=options.include_external,
     )
+
+    # --- Phase 5: Halstead complexity metrics ------------------------------
+    inject_halstead(graph, table, file_nodes)
 
     return graph
 

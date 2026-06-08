@@ -31,6 +31,7 @@ from typing import Iterable
 from .ids import is_under
 from .lpg import Edge, Graph, Node
 from .vocabulary import kind_property_for_cursor, label_for_cursor
+from .halstead import gather_operators_and_operands
 
 
 # ----------------------------------------------------------------------------
@@ -60,6 +61,7 @@ class SymbolEntry:
     parent_label: str | None
     external: bool
     macro_synthesized: bool
+    halstead_tokens: object | None = None
 
 
 def _walk_one_translation_unit(
@@ -180,6 +182,7 @@ def _walk_one_translation_unit(
                 parent_label=parent_label,
                 external=external,
                 macro_synthesized=_macro_synthesized(cursor),
+                halstead_tokens=gather_operators_and_operands(cursor) if label in ("Operation", "Variable") and cursor.is_definition() else None,
             )
         )
 
