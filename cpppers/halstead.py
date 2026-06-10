@@ -260,7 +260,7 @@ def inject_halstead(graph: Graph, symbol_table: SymbolTable, file_nodes: Dict[st
     # Find root folders (Project node contains them)
     # The root folder ID is "." usually, but we can just run for all folders.
     for n in graph.nodes:
-        if n.label == "Folder":
+        if "Folder" in n.labels:
             m = compute_folder_metrics(n.id)
             if m and m not in metrics:
                 metrics.append(m)
