@@ -194,7 +194,7 @@ def inject_halstead(graph: Graph, symbol_table: SymbolTable, file_nodes: Dict[st
     parent_map = {}
     for edge in graph.edges:
         if edge.label == "contains":
-            parent_map[edge.to_node] = edge.from_node
+            parent_map[edge.source_id] = edge.target_id
             
     for file_path, f_metrics in file_aggregates.items():
         if f_metrics:
@@ -234,7 +234,7 @@ def inject_halstead(graph: Graph, symbol_table: SymbolTable, file_nodes: Dict[st
     children_map = {}
     for edge in graph.edges:
         if edge.label == "contains":
-            children_map.setdefault(edge.from_node, []).append(edge.to_node)
+            children_map.setdefault(edge.source_id, []).append(edge.target_id)
             
     # Actually, the simplest way is to do a recursive compute.
     folder_metrics_computed: Dict[str, HalsteadMetrics] = {}
