@@ -246,7 +246,7 @@ def inject_halstead(graph: Graph, symbol_table: SymbolTable, file_nodes: Dict[st
         child_metrics = list(folder_aggregates.get(fid, []))
         for child_id in children_map.get(fid, []):
             child_node = next((n for n in graph.nodes if n.id == child_id), None)
-            if child_node and child_node.label == "Folder":
+            if child_node and "Folder" in child_node.labels:
                 child_m = compute_folder_metrics(child_id)
                 if child_m:
                     child_metrics.append(child_m)
